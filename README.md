@@ -37,7 +37,7 @@
 
 ## About The Project
 
-![image](https://user-images.githubusercontent.com/97379931/225304945-ab4e4457-ee42-4e6a-ab00-cd40f99d492a.png)
+![image](https://user-images.githubusercontent.com/97379931/229273851-e34e7c9a-4fd3-403f-9034-517f9ad31efb.png)
 
 
 Docko is a platform where patient can book a doctor's appointment of a particular Multi Specialty Hospital. This is an automated system where, at the end of each day all the appointments made for the previous day are cleared thus achieving data cleaning.
