@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+   {% block head %}
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+       <title>Analytics</title>
+       <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+       <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart()
+        {
+          var data = google.visualization.arrayToDataTable
+          ([
+             ['Type', 'Number of Doctors'],
+             ['Surgeon', 7 ],
+             ['Cardiologist',  1],
+             ['Orthopedic Surgeon', 3],
+             ['Endocrinologist', 2],
+             ['Dermatologist', 2],
+             ['Allergist ',1],
+             ['Internal Medicine Specialist ', 2],
+             ['Anesthesiologist', 2],
+             ['Neurologist  ', 2],
+             ['Dentist ', 1],
+             ['Physiotherepist  ', 2],
+          ]);
+
+          var options = {title: 'Category wise Distribution of Doctors.'};
+          var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+          chart.draw(data, options);
+      }
+    </script>
+   {% endblock %}
+   {% block body %}
+   <br><br><br>
+   <div class="container">
+   <div class="page-header">
+   <h1 style="color: #53292A"><i class="fa fa-pie-chart" aria-hidden="true"></i> Statistics<small> Category wise Distribution</small></h1>
+   </div>
+   <div class="row">
+     <div class="col-md-5">
+       <p style="text-align:justify;font-size: 140%">
+         When you think of a doctor, what image comes to mind? For most of us,
+         the connotation of “doctor” brings forth the visual of a man or woman
+         in a white lab coat, chart in hand, smiling as he or she enters the
+         room to complete your annual check-up. However, that particular doctor,
+          the family physician, represents only one of the countless areas in
+          which medical professionals work. In fact, there is a specific type
+          of doctor for almost every major system located in the human body.
+          The pie-chart aside shows the different types of doctors registered
+          on <strong>ODAS(Online Doctor Appointment System)</strong>.
+      </p>
+       <p style="text-align:justify;font-size: 140%">
+         These health care professionals put a lot of time and effort into
+         getting degrees in these specialized areas, so the next time you need
+          to book a doctor's appointment, make sure to ask, “which kind?”
+        </p>
+     </div>
+     <div class="col-md-7">
+      <div id="piechart" style="width: 900px; height: 500px;"></div>
+     </div>
+   </div>
+   <div class="page-header">
+   <h1 style="color: #53292A"><i class="fa fa-line-chart" aria-hidden="true"></i> Availability<small
+     > (Live)</small></h1>
+   </div>
+   <table class="table table-hover" border="1" >
+   <tr style="background-color: antiquewhite">
+       <th>Name</th>
+       <th>Availibility</th>
+   </tr>
+   {% for docs in all_docs %}
+       <tr>
+         <td>{{ docs.first_name }} {{ docs.last_name }} </td>
+
+             {% if docs.availibity == 0 %}
+                    <td><span class="label label-danger">Oops! All slots are booked</span></td>
+              {% elif docs.availibity < 40 %}
+                    <td style="color:orange"><b>{{docs.availibity}} %</b>
+                    <span class="label label-warning">Only Few Available !</span></td>
+              {% else %}
+                    <td style="color:green"><b>{{docs.availibity}} %</b>
+             {% endif%}
+
+       </tr>
+   {% endfor %}
+ </table>
+
+ </div>
+
+
+   {% endblock %}

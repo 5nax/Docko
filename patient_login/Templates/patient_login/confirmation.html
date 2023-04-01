@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+    {% block head %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+    <title>Confirmation</title>
+    {% endblock %}
+    {% block body %}
+    <br><br><br>
+    <div class="container">
+    <ul class="nav nav-tabs ">
+             <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a> </li>
+             <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi,{{ user.first_name }}</a></li>
+    </ul>
+     <div class="page-header">
+      <h1><i class="fa fa-check-circle-o" aria-hidden="true"></i> Booking Confirmation</h1>
+     </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" style="background-color: floralwhite"><h1>Dr.{{ doctor.first_name }} {{ doctor.last_name }}</h1></div>
+          <div class="panel-body">
+          <h2>
+              <small>
+                  Booking Id: {{ booking_id }}
+                  <br>
+                  Name: {{ user.first_name }} {{ user.last_name }}
+                  <br>
+                  Booking Date: {% now "F jS o" %}
+                  <br>
+                  Booked Slot: {{ booked_slot }}
+                  <br>
+                  Timings:
+                  {% if booked_slot == 1 %}
+                      09:00-10:00
+                      {% elif booked_slot == 2%}
+                      10:00-11:00
+                      {% elif booked_slot == 3%}
+                      11:00-12:00
+                      {% elif booked_slot == 4%}
+                      13:00-14:00
+                      {% elif booked_slot == 5%}
+                      14:00-15:00
+                      {% elif booked_slot == 6%}
+                      15:00-16:00
+                      {% elif booked_slot == 7%}
+                      17:00-18:00
+                  {% endif %}
+              </small>
+          </h2>
+          </div>
+        </div>
+
+
+    <h1></h1>
+    </div>
+    {% endblock %}

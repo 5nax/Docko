@@ -1,0 +1,52 @@
+ {% extends 'base.html' %}
+    {% block head %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <title>All Doctors | List</title>
+    {% endblock %}
+
+    {% block body %}
+    {% if all_docs %}
+        <div>
+        <br><br><br>
+        <div class="container" style="background-color: floralwhite">
+        <ul class="nav nav-tabs ">
+             <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout </a> </li>
+             <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi,{{ user.first_name }}</a></li>
+              <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+        </ul><br>
+
+            {% for docs in all_docs %}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <h2><a href="/patient_login/{{ docs.id }}" style="color: #53292A">Dr. {{ docs.first_name }} {{ docs.last_name }}</a>  </h2>
+                                  <h4>{{ docs.specialization }}<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+                                     | <i class="fa fa-inr" aria-hidden="true"></i>{{ docs.fees }}</h4>
+                                </div>
+                                <div class="col-md-5"></div>
+                                <div class="col-md-3">
+                                  {% if docs.availibity == 0 %}
+                                         <br><h4><span class="label label-danger">Oops! All slots are booked</span></h4>
+                                   {% elif docs.availibity < 40 %}
+                                         <h2 style="color: orange"><b>{{docs.availibity}} %</b></h2>
+                                         <span class="label label-warning">Only Few Available !</span>
+                                   {% else %}
+                                         <h2 style="color: green"><b>{{docs.availibity}} %</b></h2>
+                                         <span class="label label-success">Available</span>
+                                  {% endif%}
+                                </div>
+                              </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+    {% else %}
+            <h2>Doctors are not yet registered</h2>
+    {% endif %}
+        </div>
+    {% endblock %}
+
+</div>
+</body>
+</html>

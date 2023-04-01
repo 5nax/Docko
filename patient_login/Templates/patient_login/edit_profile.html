@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Edit Profile</title>
+{% endblock %}
+{% block body%}
+    {% load static %}
+             <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+             <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+    <div class="container">
+    <ul class="nav nav-tabs ">
+             <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a> </li>
+             <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A" >Hi,{{ user.first_name }}</a></li>
+         </ul>
+        <div class="page-header">
+             <h1>My Profile<br><small>Hi {{ user.first_name }}, What's up today?</small></h1>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-default" style="background-color:antiquewhite ">Save</button>
+            <button type="reset" class="btn btn-default" style="background-color:antiquewhite " onclick="location.href='/patient_login/profile/'">Cancel</button>
+        </form>
+
+
+    </div>
+
+{% endblock %}

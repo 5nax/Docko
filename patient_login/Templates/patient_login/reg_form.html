@@ -1,0 +1,34 @@
+ {% extends 'base.html' %}
+ {% block head %}
+     <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+    <title>Register</title>
+{% endblock %}
+
+{% block body %}
+
+
+     {% load static %}
+             <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+    <div class="container">
+        <div class="page-header">
+            <h1>Join with us..!<br><small>Please enter the details.</small></h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p}}
+            <button class="btn btn-default" type="submit" style="background-color:antiquewhite ">Register</button>
+        </form>
+    </div>
+
+{% endblock %}

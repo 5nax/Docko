@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Login</title>
+{% endblock %}
+{% block body%}
+     {% load static %}
+             <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+             <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+    <div class="container">
+    <div class="page-header">
+        <h1>Patient Login<br><small>Login</small></h1>
+    </div>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }} "style="color: green">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+        <form method="post">
+            <div class="form-group">
+                {% csrf_token %}
+                {{ form.as_p }}
+                    <button class="btn btn-default" type="submit" style="background-color:antiquewhite ">Login</button>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}
