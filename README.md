@@ -6,7 +6,7 @@
   <p align="center">
     Django Web-Based Hospital Management System
     <br />
-    <a href="https://github.com/5nax/Envision-AI"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/5nax/Docko"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     ·
