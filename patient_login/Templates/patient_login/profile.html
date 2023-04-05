@@ -1,69 +1,110 @@
 {% extends 'base.html' %}
 {% block head %}
-    <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-    <title>Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<title>Profile</title>
 {% endblock %}
-{% block body%}
-    {% load static %}
-             <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
-    <br><br><br>
-    <div class="container">
-    <ul class="nav nav-tabs ">
-             <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a> </li>
-             <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A" ><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi,{{ user.first_name }}</a></li>
-         </ul>
-     <div class="page-header">
-         <h1>My Profile<br><small>Hi {{ user.first_name }},What's up today?</small></h1>
+{% block body %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+    .container {
+        max-width: 900px;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1, h4 {
+        color: #53292A;
+    }
+    .nav-tabs .nav-link {
+        color: #53292A;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #7B4B3A;
+    }
+    .nav-tabs .nav-link.active {
+        color: #7B4B3A;
+        background-color: transparent;
+        border: none;
+    }
+    .nav-tabs {
+        border-bottom: none;
+    }
+    button {
+        color: #53292A;
+        border: 1px solid #53292A;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    button:hover {
+        background-color: #7B4B3A;
+        color: white;
+    }
+</style>
+<br><br><br>
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="navbar-right"><a href="/" class="nav-link"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a></li>
+        <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" class="nav-link active"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi,{{ user.first_name }}</a></li>
+    </ul>
+    <div class="page-header">
+        <h1>My Profile<br><small>Hi {{ user.first_name }}, what's up today?</small></h1>
     </div>
     {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning" role="alert" style="background-color: floralwhite; opacity: 0.7">
-                    <strong>Oops! </strong>{{ message }}
-                </div>
-            {% endfor %}
+        {% for message in messages %}
+            <div class="alert alert-warning" role="alert" style="background-color: floralwhite; opacity: 0.7">
+                <strong>Oops! </strong>{{ message }}
+            </div>
+        {% endfor %}
     {% endif %}
-
-
     <p>
-        <h4><b>Username:</b>{{ user.username }}</h4>
-        <h4><b>First name:</b>{{ user.first_name }}</h4>
-        <h4><b>Last name:</b>{{ user.last_name }}</h4>
-        <h4><b>DOB:</b>{{ user.userprofile.dob }}</h4>
-        <h4><b>Gender:</b>{{ user.userprofile.gender }}</h4>
-        <h4><b>Email:</b>{{ user.email }}</h4>
-        <h4><b>Phone no.:</b>{{ user.userprofile.phone }}</h4>
+        <h4><b>First name:</b> {{ user.first_name }}</h4>
+        <h4><b>Last name:</b> {{ user.last_name }}</h4>
+        <h4><b>Email:</b> {{ user.email }}</h4>
+        <h4><b>Phone no.:</b> {{ user.userprofile.phone }}</h4>
+</p>
+<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#moreDetails">Show More Details</button>
+<div id="moreDetails" class="collapse">
+<p>
+<h4><b>Username:</b> {{ user.username }}</h4>
+<h4><b>DOB:</b> {{ user.userprofile.dob }}</h4>
+<h4><b>Gender:</b> {{ user.userprofile.gender }}</h4>
+</p>
+<div class="row">
+<div class="col-md-4">
+<div class="panel panel-default">
+<div class="panel-body" style="background-color: floralwhite">
+<h4><b>Current Booking ID: </b></h4>
+</div>
+<div class="panel-footer" style="background-color: antiquewhite">
+<h4>
+{% if user.userprofile.curr_booking_id %}
+{{ user.userprofile.curr_booking_id }}
+{% else %}
+<h4> Seems, you've not booked any appointment yet!</h4>
+{% endif %}
+</h4>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-3">
+    <button type="submit" class="btn btn-default" onclick="location.href='edit/'">Edit</button>
+    <button type="submit" class="btn btn-default" onclick="location.href='/'">Back</button>
+    <button type="submit" class="btn btn-default" onclick="location.href='change_password/'">Change Password</button>
+</div>
 
-        <div class="row">
-          <div class="col-md-4">
-              <div class="panel panel-default">
-                  <div class="panel-body" style="background-color: floralwhite">
-                      <h4><b>Current Booking ID: </b></h4>
-                  </div>
-                  <div class="panel-footer" style="background-color: antiquewhite">
-                      <h4>
-                          {% if user.userprofile.curr_booking_id %}
-                              {{ user.userprofile.curr_booking_id }}</h4>
-                          {% else %}
-                              <h4> Seems, you've not booked any appointment yet !</h4>
-                          {% endif %}
-
-                  </div>
-              </div>
-          </div>
-
-        </div>
-
-
-
-
-    </p>
-    <button type="submit" class="btn btn-default" style="background-color:antiquewhite "onclick="location.href='edit/'" >Edit</button>
-    <button type="submit" class="btn btn-default" style="background-color:antiquewhite "onclick="location.href='/patient_login'">Back</button>
-    <button type="submit" class="btn btn-default" style="background-color:antiquewhite "onclick="location.href='change_password/'">Change Password</button>
-
-    </div>
-    <br>
-    <br>
-
-
+</div>
+<br>
+<br>
 {% endblock %}

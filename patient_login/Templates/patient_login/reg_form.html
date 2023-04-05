@@ -1,34 +1,47 @@
- {% extends 'base.html' %}
- {% block head %}
-     <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-    <title>Register</title>
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<title>Register</title>
 {% endblock %}
 
 {% block body %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+<nav class="navbar navbar-expand-lg" style="background-color: #53292A;">
+    <a class="navbar-brand" href="/" style="color: antiquewhite">Docko</a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/patient_login/register" style="color: antiquewhite">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Register
+            </a>
+        </li>
+    </ul>
+</nav>
 
-
-     {% load static %}
-             <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
-    <div class="container">
-        <div class="page-header">
-            <h1>Join with us..!<br><small>Please enter the details.</small></h1>
-        </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-danger" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-
-
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p}}
-            <button class="btn btn-default" type="submit" style="background-color:antiquewhite ">Register</button>
-        </form>
+<div class="container">
+    <div class="page-header">
+        <h1>Join with us..!<br><small>Please enter the details.</small></h1>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form method="post" class="register-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-default" type="submit" style="background-color:antiquewhite">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

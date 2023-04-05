@@ -1,4 +1,83 @@
 body{
-    background: white url("images/background2.jpg") no-repeat center center fixed;
+    background: white url("images/background.jpg") no-repeat center center fixed;
     background-size: cover;
 }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: #f2f2f2;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Navbar Styles */
+.navbar {
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.navbar__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+.navbar__logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #53292a;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.navbar__logo:hover {
+  transform: translateY(-2px);
+}
+
+.navbar__list {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+}
+
+.navbar__item {
+  margin-left: 25px;
+}
+
+.navbar__link {
+  color: #666;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.navbar__link:hover {
+  color: #53292a;
+}
+
+/* Main Styles */
+.main {
+  min-height: calc(100vh - 70px - 50px);
+  padding: 100px 0;
+

@@ -1,26 +1,81 @@
-{% extends 'base.html' %}
-
 {% block head %}
-    {% load static %}
-    <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <title>Docko</title>
+{% load static %}
+<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<title>Docko</title>
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="jumbotron" style="opacity: 0.7; background-color: antiquewhite;">
-            <h1>Online Doctor Appointment System</h1>
-            <h2>Find a Doctor and Schedule an Appointment</h2>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #53292A;">
+<div class="container">
+<a class="navbar-brand" href="/" style="color: antiquewhite;">Docko</a>
+<div class="collapse navbar-collapse">
+<ul class="navbar-nav ml-auto">
+<li class="nav-item">
+<a class="nav-link" href="/patient_login/register" style="color: antiquewhite;"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Register</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<div class="container">
+    <div class="jumbotron" style="opacity: 0.7; background-color: antiquewhite;">
+        <h1>Online Doctor Appointment System</h1>
+        <h2>Find a Doctor and Schedule an Appointment</h2>
+    </div>
 
-        <div class="btn-group">
-            <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='admin'">Admin Login</button>
-            <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='patient_login/login'">Patient Login</button>
-            <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='patient_login/analytics'">Analytics</button>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='admin'">Admin Login</button>
+        <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='patient_login/login'">Patient Login</button>
+        <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='patient_login/analytics'">Analytics</button>
+        <button type="button" class="btn btn-default" style="background-color: antiquewhite;" onclick="location.href='chatbot'">ChatBot</button>
+    </div>
+</div>
+<br><br>
+<div class="container">
+<div class="row">
+<!-- Section 1 -->
+<div class="col-md-4">
+<div class="panel panel-default">
+<div class="panel-heading">
+<h2>About Docko</h2>
+</div>
+<div class="panel-body">
+<p>Docko is an online doctor appointment system designed to simplify the process of finding and scheduling appointments with doctors. Our platform connects patients with a wide range of medical professionals across various specializations, making it easy to find the right doctor for your needs.</p>
+</div>
+</div>
+</div>
+      <!-- Section 2 -->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Our Services</h2>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>Find doctors based on specialization, location, and availability</li>
+                        <li>Book appointments online</li>
+                        <li>Manage appointments and reschedule if necessary</li>
+                        <li>Access medical records and history securely</li>
+                        <li>Chat with our AI-powered chatbot for quick assistance</li>
+</ul>
+</div>
+</div>
+</div>
+     <!-- Section 3 -->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Get Started</h2>
+                </div>
+                <div class="panel-body">
+                    <p>To begin using Docko, register as a patient or log in to your existing account. Once logged in, you can search for doctors, view their profiles, and book appointments online. Our analytics section provides insightful information on the distribution of doctors across various specialties, while our chatbot is available for quick support and assistance.</p>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

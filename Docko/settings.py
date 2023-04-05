@@ -30,18 +30,19 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
-    'home.apps.HomeConfig',
-    'admin_login.apps.AdminLoginConfig',
-    'doctor_login.apps.DoctorLoginConfig',
-    'patient_login.apps.PatientLoginConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
+INSTALLED_APPS = ['home.apps.HomeConfig',
+                  'chatbot',
+                  'admin_login',
+                  'doctor_login.apps.DoctorLoginConfig',
+                  'patient_login.apps.PatientLoginConfig',
+                  'django.contrib.admin',
+                  'django.contrib.auth',
+                  'django.contrib.contenttypes',
+                  'django.contrib.sessions',
+                  'django.contrib.messages',
+                  'django.contrib.staticfiles',]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

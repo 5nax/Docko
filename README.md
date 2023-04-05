@@ -48,6 +48,7 @@ Features included are:
 * Patient Login
 * Real Time Doctor's Availability based on Schedules
 * Booking System
+* Chat Bot to recommend specialists according to symptoms
 
 
 Here are the major tools used to build this project:
