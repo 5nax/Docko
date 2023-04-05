@@ -1,4 +1,5 @@
 {% block head %}
+
 <title>Edit Profile</title>
 {% endblock %}
 {% block body %}
@@ -18,45 +19,44 @@ font-family: 'Roboto', sans-serif;
     .container {
         margin-top: 50px;
     }
-
     .page-header {
-        text-align: center;
-        color: white;
-        margin-bottom: 50px;
-    }
+    text-align: center;
+    color: white;
+    margin-bottom: 50px;
+}
 
-    form {
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 5px;
-        padding: 20px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        max-width: 400px;
-        margin: 0 auto;
-    }
+form {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    margin: 0 auto;
+}
 
-    .navbar {
-        background-color: #53292A;
-    }
+.navbar {
+    background-color: #53292A;
+}
 
-    .navbar a {
-        color: white;
-    }
+.navbar a {
+    color: white;
+}
 
-    button[type="submit"], button[type="reset"] {
-        background-color: #53292A;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+button[type="submit"], button[type="reset"] {
+    background-color: #53292A;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-    button[type="submit"]:hover, button[type="reset"]:hover {
-        background-color: #fff;
-        color: #53292A;
-    }
+button[type="submit"]:hover, button[type="reset"]:hover {
+    background-color: #fff;
+    color: #53292A;
+}
 </style>
 <nav class="navbar navbar-expand-sm">
     <ul class="navbar-nav">
@@ -64,14 +64,18 @@ font-family: 'Roboto', sans-serif;
             <a class="nav-link" href="/">Home</a>
         </li>
     </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/" style="color: white"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/patient_login/profile/" style="color: white">Hi, {{ user.first_name }}</a>
+        </li>
+    </ul>
 </nav>
 <div class="container">
-    <ul class="nav nav-tabs ">
-        <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a> </li>
-        <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A" >Hi,{{ user.first_name }}</a></li>
-    </ul>
     <div class="page-header">
-        <h1>Edit Profile<br><small>Hi {{ user.first_name }}, What's up today?</small></h1>
+        <h1><br><small style="color: Black">Hi {{ user.first_name }}, What's up today?</small></h1>
     </div>
     <form method="post">
         {% csrf_token %}
