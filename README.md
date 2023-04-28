@@ -10,9 +10,9 @@
     <br />
     <br />
     ·
-    <a href="https://github.com/5nax/Envision-AI/issues">Report Bug</a>
+    <a href="https://github.com/5nax/Docko/issues">Report Bug</a>
     ·
-    <a href="https://github.com/5nax/Envision-AI/issues">Request Feature</a>
+    <a href="https://github.com/5nax/Docko/issues">Request Feature</a>
   </p>
 </div>
 
