@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='userprofile',
-            name='curr_booking',
+            name='curr_booking_id',
         ),
     ]

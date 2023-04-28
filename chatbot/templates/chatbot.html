@@ -1,40 +1,53 @@
 {% load static %}
 
-{% block head %}
-  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-{% endblock %}
-
-{% block content %}
-  <body style="background-image: url('{% static 'background.jpg' %}');
-               background-size: cover;
-               font-family: 'Open Sans', sans-serif;
-               font-size: 16px;
-               color: #333;">
-    <div class="chatbot-container" style="margin: auto;
-                                           max-width: 600px;
-                                           padding: 20px;
-                                           background-color: #f2f2f2;
-                                           border-radius: 10px;
-                                           text-align: center;">
-      <h1 style="margin-top: 0;">Doctor Specialist Chatbot</h1>
-      <p>Welcome to the Doctor Specialist Chatbot. Please enter your question below:</p>
-      <form method="post" style="display: inline-block;">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" style="background-color: #4CAF50;
-                                      color: white;
-                                      padding: 8px 16px;
-                                      border: none;
-                                      border-radius: 4px;
-                                      cursor: pointer;
-                                      margin-top: 10px;">Ask</button>
-      </form>
-      {% if suggested_specialist %}
-        <p style="margin-top: 20px;">ChatBot: {{ suggested_specialist|safe }}</p>
-      {% endif %}
-      <a href="/" style="display: block;
-                          text-align: center;
-                          margin-top: 20px;">Back to Home</a>
-    </div>
-  </body>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head>
+    {% block head %}
+        <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+    {% endblock %}
+</head>
+<body style="min-height: 100%; margin-bottom: 0; padding-bottom: 50px; background-color: #1A3D6A;">
+    {% block content %}
+        <div style="padding-top: 70px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="text-center text-light mb-4">Doctor Specialist Chatbot</h1>
+                        <p class="text-center text-light">Welcome to the Doctor Specialist Chatbot. Our AI chatbot is designed to help you find the right specialist for your medical needs. Simply type in your question or concern, and the chatbot will provide you with a recommendation.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">Ask the Chatbot</h5>
+                                <p class="card-text">Please enter your question below:</p>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <button type="submit" class="btn btn-success mt-2 mb-3">Ask</button>
+                                </form>
+                                {% if suggested_specialist %}
+                                    <p>ChatBot: {{ suggested_specialist|safe }}</p>
+                                {% endif %}
+                                <a href="/" class="btn btn-primary btn-sm">Back to Home</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <p class="text-center text-light">Our chatbot utilizes advanced AI algorithms to analyze your input and provide you with the most accurate specialist recommendation. From cardiologists to dermatologists, we cover a wide range of medical specialties to help you find the best care possible.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+</body>
+</html>

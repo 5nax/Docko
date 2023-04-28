@@ -4,6 +4,15 @@ from  django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import UserProfile
 from doctor_login.models import docDetails
 
+class scheduleForm(forms.Form):
+    selected_slot = forms.ChoiceField(choices=[('slot1', 'Slot 1'),
+                                               ('slot2', 'Slot 2'),
+                                               ('slot3', 'Slot 3'),
+                                               ('slot4', 'Slot 4'),
+                                               ('slot5', 'Slot 5'),
+                                               ('slot6', 'Slot 6'),
+                                               ('slot7', 'Slot 7')], label='Select a time slot')
+    date = forms.DateField(label='Select a date')
 class RegistrationForm(UserCreationForm):
     email=forms.EmailField(required=True)
     class Meta:
@@ -38,7 +47,3 @@ class EditProfileForm(UserChangeForm):
                 'password'
            )
 SLOT_LIST=(('slot1','Slot 1'),('slot2','Slot 2'),('slot3','Slot 3'),('slot4','Slot 4'),('slot5','Slot 5'),('slot6','Slot 6'),('slot7','Slot 7'))
-class scheduleForm(forms.Form):
-
-    selected_slot= forms.ChoiceField(choices=SLOT_LIST)
-

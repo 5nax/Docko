@@ -3,35 +3,33 @@
 <head>
     {% block head %}
        <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-
     {% endblock %}
-
-</head>
+    </head>
 <body style="min-height: 100%; margin-bottom: 0; padding-bottom: 50px;">
     {% load static %}
     <div class="container">
-        <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #53292A;opacity: 1">
+        <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #1A3D6A;opacity: 1">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="/" style="color: antiquewhite">
+                    <a class="navbar-brand" href="/" style="color: #B0D4E6">
                         <i class="fa fa-heartbeat" aria-hidden="true"></i>
                         Docko
                     </a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse" >
                     <ul class="nav navbar-nav" >
-                        <li ><a href="/"style="color: antiquewhite" ><span class="glyphicon glyphicon-home" aria-hidden="true"></span>  Home</a> </li>
-                        <li><a href="/patient_login/login" style="color: antiquewhite"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"> </span> I'm a Patient</a> </li>
-                        <li><a href="/patient_login/analytics"style="color: antiquewhite" ><i class="fa fa-area-chart" aria-hidden="true"></i></span> Analytics</a> </li>
+                        <li ><a href="/" style="color: #B0D4E6"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>  Home</a> </li>
+                        <li><a href="/patient_login/login" style="color: #B0D4E6"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"> </span> I'm a Patient</a> </li>
+                        <li><a href="/patient_login/analytics" style="color: #B0D4E6"><i class="fa fa-area-chart" aria-hidden="true"></i></span> Analytics</a> </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/patient_login/register"style="color: antiquewhite" ><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Register</a> </li>
+                        <li><a href="/patient_login/register" style="color: #B0D4E6"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Register</a> </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
-
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 </body>
 </html>
+

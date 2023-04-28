@@ -8,12 +8,67 @@ from  django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.views.generic import TemplateView
 from  .models import UserProfile
+from datetime import  timedelta
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+from .forms import RegistrationForm, EditProfileForm, scheduleForm
 import datetime
 
-def view_profile(request):
-    args={'user':request.user}
-    return render(request,'patient_login/profile.html',args)
+def send_confirmation_email(request, booking_id, slotnumber):
+    # Get the user information from the request
+    user = request.user
+    # Define the email subject line
+    subject = 'Booking Confirmation'
+    # Add a personalized greeting
+    greeting = f"Hi {user.first_name},"
+    # Construct the confirmation message
+    message = f"{greeting}<br><br>We wanted to confirm your booking #{booking_id} on {request.user.userprofile.booked_date.strftime('%A, %B %d, %Y')} at {request.user.userprofile.booked_date.strftime('%I:%M %p')}."
 
+    # Add more details about the booking
+    message += "<br><br>Your booking is confirmed and we look forward to seeing you at our location. Please note that if you need to cancel or reschedule your appointment, please let us know at least 24 hours in advance."
+
+    # Add a closing remark
+    message += "<br><br>Thank you for choosing our service. If you have any questions or concerns, please don't hesitate to contact us."
+
+    # Define the sender email address
+    from_email = 'dockoauto@gmail.com'
+    # Define the recipient email address
+    recipient_list = [user.email]
+    # Send the confirmation email with both plain text and HTML message body
+    send_mail(
+        subject=subject,
+        message='',
+        from_email=from_email,
+        recipient_list=recipient_list,
+        html_message=message
+    )
+
+def send_reminder_email(user, booking_id):
+    subject = 'Appointment Reminder'
+    greeting = f"Hi {user.first_name},"
+    message = f"{greeting} This is a reminder that your appointment #{booking_id} is scheduled for tomorrow."
+    message += "Please remember to arrive on time and have all necessary documents with you."
+    message += "Thank you for choosing our service. If you have any questions or concerns, please don't hesitate to contact us."
+    plain_message = strip_tags(message)
+    from_email = 'dockoauto@gmail.com'
+    recipient_list = [user.email]
+    send_mail(subject, plain_message, from_email, recipient_list, html_message=message)
+def view_profile(request):
+    user = request.user
+    try:
+        profile = user.userprofile
+        curr_booking_id = profile.curr_booking_id
+        booked_date = profile.booked_date
+    except UserProfile.DoesNotExist:
+        curr_booking_id = None
+        booked_date = None
+
+    args = {
+        'user': user,
+        'curr_booking_id': curr_booking_id,
+        'booked_date': booked_date
+    }
+    return render(request, 'patient_login/profile.html', args)
 
 class schedule(TemplateView):
     template_name ='schedule.html'
@@ -27,232 +82,61 @@ class schedule(TemplateView):
             raise Http404("Invalid Doctor Id.")
         return render(request, self.template_name,{'doctor':doctor,'form':form,'curr_date':curr_date})
 
-    def post(self,request,doc_id):
-        form =scheduleForm(request.POST)
+    def post(self, request, doc_id):
+        form = scheduleForm(request.POST)
         doctor = docDetails.objects.get(pk=doc_id)
-        curr_user = request.user
+        curr_user = request.user.userprofile
+
+        def book_slot(slot_number, slot_attr):
+            if not getattr(doctor, slot_attr):
+                setattr(doctor, slot_attr, True)
+                doctor.save()
+                return generate_booking_id(slot_number)
+            else:
+                messages.error(request, 'Already booked!')
+                return None
+
+        def generate_booking_id(booked_slot):
+            curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
+            doc_pk = f"{doctor.pk:0>2}"  # zero-pads doctor.pk to 2 digits
+            user_pk = f"{request.user.pk:0>4}"  # zero-pads request.user.pk to 4 digits
+            booking_id = f"BKID{doc_pk}{user_pk}{curr_date}{booked_slot}"
+            return booking_id
+
         if form.is_valid():
+            ss = form.cleaned_data['selected_slot']
+            slot_mapping = {
+                'slot1': ('slot1', 'slot1_id'),
+                'slot2': ('slot2', 'slot2_id'),
+                'slot3': ('slot3', 'slot3_id'),
+                'slot4': ('slot4', 'slot4_id'),
+                'slot5': ('slot5', 'slot5_id'),
+                'slot6': ('slot6', 'slot6_id'),
+                'slot7': ('slot7', 'slot7_id'),
+            }
 
-            ss= form.cleaned_data['selected_slot']
-            if ss=='slot1':
-                if doctor.slot1==False:
-                    doctor.slot1 = True
-                    doctor.save()
-                    booked_slot=1
-                    curr_date = datetime.datetime.now().strftime ("%d%m%Y") #returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk))==1:
-                        doc_pk='0'+str(doctor.id)
-                    elif len(str(doctor.pk))==2:
-                        doc_pk=str(doctor.id)
+            slot_number, slot_id_attr = slot_mapping[ss]
+            booking_id = book_slot(slot_number, slot_number)
 
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk))==1:
-                        user_pk = '000'+str(request.user.pk)
-                    elif len(str(request.user.pk))==2:
-                        user_pk = '00'+str(request.user.pk)
-                    elif len(str(request.user.pk))==3:
-                        user_pk = '0'+str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
+            if booking_id is not None:
+                setattr(doctor, slot_id_attr, booking_id)
+                doctor.save()
+                booked_date = form.cleaned_data['date']
+                curr_user.curr_booking_id = int(booking_id[10:18])
+                curr_user.booked_date = booked_date
+                curr_user.save()
 
-                    booking_id ='BKID'+doc_pk+ user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor,'booked_slot':booked_slot,'booking_id': booking_id }
-                    doctor.slot1_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request,'patient_login/confirmation.html' ,args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot2':
-                if doctor.slot2 == False:
-                    doctor.slot2 = True
-                    doctor.save()
-                    booked_slot = 2
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
+                args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': int(slot_number[-1]),
+                        'booking_id': booking_id, 'booked_date': booked_date}  # change booking_date to booked_date
+                send_confirmation_email(request, booking_id, slot_number)
+                return render(request, 'patient_login/confirmation.html', args)
 
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id}
-                    doctor.slot2_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot3':
-                if doctor.slot3 == False:
-                    doctor.slot3 = True
-                    doctor.save()
-                    booked_slot = 3
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
-
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id}
-                    doctor.slot3_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot4':
-                if doctor.slot4 == False:
-                    doctor.slot4 = True
-                    doctor.save()
-                    booked_slot = 4
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
-
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id}
-                    doctor.slot4_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot5':
-                if doctor.slot5 == False:
-                    doctor.slot5 = True
-                    doctor.save()
-                    booked_slot = 5
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
-
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id}
-                    doctor.slot5_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot6':
-                if doctor.slot6 == False:
-                    doctor.slot6 = True
-                    doctor.save()
-                    booked_slot = 6
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
-
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id }
-                    doctor.slot6_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-            elif ss=='slot7':
-                if doctor.slot7 == False:
-                    doctor.slot7=True
-                    doctor.save()
-                    booked_slot = 7
-                    curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-                    # adjustment of doctor id for bit 4 and bit 5 of booking id
-                    if len(str(doctor.pk)) == 1:
-                        doc_pk = '0' + str(doctor.id)
-                    elif len(str(doctor.pk)) == 2:
-                        doc_pk = str(doctor.id)
-
-                    # adjustment of user id for bits 6,7,8 and 9 of booking id
-                    if len(str(request.user.pk)) == 1:
-                        user_pk = '000' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 2:
-                        user_pk = '00' + str(request.user.pk)
-                    elif len(str(request.user.pk)) == 3:
-                        user_pk = '0' + str(request.user.pk)
-                    else:
-                        user_pk = str(request.user.pk)
-                    booking_id = 'BKID' + doc_pk + user_pk +str(curr_date)+str(booked_slot)
-                    args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': booked_slot,'booking_id': booking_id }
-                    doctor.slot7_id = booking_id
-                    doctor.save()
-                    curr_user.userprofile.curr_booking_id = booking_id
-                    curr_user.userprofile.save()
-                    return render(request, 'patient_login/confirmation.html', args)
-                else:
-                    messages.error(request, 'Already  booked !')
-
-        args = {'form':form,'ss':ss,'doctor': doctor,}
-        return render(request, self.template_name, args)
-
-
-
-
+            args = {'form': form, 'ss': ss, 'doctor': doctor}
+            return render(request, self.template_name, args)
+        else:
+            messages.error(request, 'Form is not valid.')
+            args = {'form': form, 'doctor': doctor}
+            return render(request, self.template_name, args)
 def edit_profile(request):
     if request.method =='POST':
         form=EditProfileForm(request.POST, instance=request.user)
@@ -302,7 +186,13 @@ def index3(request):
     curr_user = request.user
     for docs in all_docs:
         docs.cal_availibity()
-    if curr_user.userprofile.curr_booking_id:
+
+    try:
+        curr_booking_id = curr_user.userprofile.curr_booking_id
+    except UserProfile.DoesNotExist:
+        curr_booking_id = None
+
+    if curr_booking_id:
         messages.info(request, 'You already have one appointment.')
         return render(request,'patient_login/profile.html')
     else:

@@ -93,6 +93,36 @@
 <h4> Seems, you've not booked any appointment yet!</h4>
 {% endif %}
 </h4>
+    <div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+
+            <div class="panel-footer" style="background-color: antiquewhite">
+
+                {% if user.userprofile.curr_booking_id %}
+                    <p><b>Booking Date:</b> {{ user.userprofile.booked_date }}</p>
+                    <p><b>Booking Slot:</b>
+                        {% if 'slot1' in user.userprofile.curr_booking_id %}
+                            Slot 1
+                        {% elif 'slot2' in user.userprofile.curr_booking_id %}
+                            Slot 2
+                        {% elif 'slot3' in user.userprofile.curr_booking_id %}
+                            Slot 3
+                        {% elif 'slot4' in user.userprofile.curr_booking_id %}
+                            Slot 4
+                        {% elif 'slot5' in user.userprofile.curr_booking_id %}
+                            Slot 5
+                        {% elif 'slot6' in user.userprofile.curr_booking_id %}
+                            Slot 6
+                        {% elif 'slot7' in user.userprofile.curr_booking_id %}
+                            Slot 7
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </div>
 </div>

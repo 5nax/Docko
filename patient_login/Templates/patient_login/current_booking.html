@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Current Booking</h1>
+    <h4><b>Booking ID:</b> {{ booking_id }}</h4>
+    {% if booking_date %}
+        <h4><b>Booking Date:</b> {{ booking_date|date:"F d, Y" }}</h4>
+    {% endif %}
+    <h4><b>Booking Time:</b> {{ booking_time }}</h4>
+    <br>
+    <button type="submit" class="btn btn-default" onclick="location.href='/patient_login/profile/'">Back to Profile</button>
+</div>
+{% endblock %}
