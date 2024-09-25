@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+
+    <!-- Bootstrap CSS and FontAwesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2, h3 {
+            color: #343a40;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .appointment-list, .completed-appointments {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        .appointment-list li, .completed-appointments li {
+            list-style: none;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .appointment-list li:last-child, .completed-appointments li:last-child {
+            border-bottom: none;
+        }
+        strong {
+            font-weight: 600;
+        }
+        .btn-action {
+            margin-right: 10px;
+            padding: 6px 12px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-action i {
+            margin-right: 5px;
+        }
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+        .no-appointments {
+            text-align: center;
+            color: #6c757d;
+            font-size: 16px;
+        }
+        @media (max-width: 576px) {
+            .appointment-list, .completed-appointments {
+                padding: 20px;
+            }
+            .btn-action {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #1A3D6A;
+            padding: 5px 0; /* Reduced padding */
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem; /* Adjusted brand size */
+            color: #B0D4E6;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1rem; /* Reduced font size for navbar items */
+            color: #B0D4E6;
+            padding: 10px 15px; /* Adjust padding */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #FFF;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+    </style>
+</head>
+<body style="min-height: 100%; padding-bottom: 50px; display: flex; flex-direction: column;">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1A3D6A;">
+        <div class="container">
+            <a class="navbar-brand" href="/" style="color: #B0D4E6;">DaDps</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'doctor_profile' %}" style="color: #B0D4E6;">
+                            <i class="fa fa-user-md"></i> Doctor Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link" style="color: #B0D4E6;">
+                                <i class="fa fa-power-off"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Doctor Dashboard Content -->
+    <div class="container">
+        <h2>Doctor Dashboard</h2>
+
+        <!-- Pending Appointments Section -->
+        <div class="appointment-list">
+            <h3>Pending Appointments</h3>
+            <ul>
+                {% for appointment in appointments %}
+                    <li>
+                        <strong>Patient:</strong> {{ appointment.patient.first_name }} {{ appointment.patient.last_name }} <br>
+                        <strong>Date:</strong> {{ appointment.date }} <br>
+                        <strong>Time:</strong> {{ appointment.time }} <br>
+                        <a href="{% url 'complete_appointment' appointment.id %}" class="btn btn-success btn-sm btn-action">
+                            <i class="fas fa-check-circle"></i> Mark as Complete
+                        </a>
+                        <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-danger btn-sm btn-action">
+                            <i class="fas fa-times-circle"></i> Cancel
+                        </a>
+                        <a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-info btn-sm btn-action">
+                            <i class="fas fa-calendar-alt"></i> Reschedule
+                        </a>
+                    </li>
+                {% empty %}
+                    <p class="no-appointments">No pending appointments.</p>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Completed Appointments Section -->
+        <div class="completed-appointments">
+            <h3>Completed Appointments</h3>
+            <ul>
+                {% for appointment in completed_appointments %}
+                    <li>
+                        <strong>Patient:</strong> {{ appointment.patient.first_name }} {{ appointment.patient.last_name }} <br>
+                        <strong>Date:</strong> {{ appointment.date }} <br>
+                        <strong>Time:</strong> {{ appointment.time }} <br>
+                        <a href="{% url 'view_prescription' appointment.id %}" class="btn btn-primary btn-sm btn-action">
+                            <i class="fas fa-file-medical-alt"></i> View Prescription
+                        </a>
+                    </li>
+                {% empty %}
+                    <p class="no-appointments">No completed appointments.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

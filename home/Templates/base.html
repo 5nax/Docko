@@ -2,34 +2,51 @@
 <html lang="en" style="height: 100%;">
 <head>
     {% block head %}
-       <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+        <!-- Font Awesome for Icons -->
+        <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <title>DaDps</title>
     {% endblock %}
-    </head>
-<body style="min-height: 100%; margin-bottom: 0; padding-bottom: 50px;">
+</head>
+<body style="min-height: 100%; padding-bottom: 50px; display: flex; flex-direction: column;">
     {% load static %}
-    <div class="container">
-        <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #1A3D6A;opacity: 1">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/" style="color: #B0D4E6">
-                        <i class="fa fa-heartbeat" aria-hidden="true"></i>
-                        Docko
-                    </a>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse" >
-                    <ul class="nav navbar-nav" >
-                        <li ><a href="/" style="color: #B0D4E6"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>  Home</a> </li>
-                        <li><a href="/patient_login/login" style="color: #B0D4E6"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"> </span> I'm a Patient</a> </li>
-                        <li><a href="/patient_login/analytics" style="color: #B0D4E6"><i class="fa fa-area-chart" aria-hidden="true"></i></span> Analytics</a> </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/patient_login/register" style="color: #B0D4E6"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Register</a> </li>
-                    </ul>
-                </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #1A3D6A;">
+        <div class="container">
+            <a class="navbar-brand" href="/" style="color: #B0D4E6;">DaDps</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    {% if username == "Guest" %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/patient_login/register" style="color: #B0D4E6;">
+                                <i class="fa fa-user"></i> Register
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/patient_login/profile" style="color: #B0D4E6;">
+                                <i class="fa fa-user"></i> {{ username }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
+
+    <!-- Body Content -->
+    <div class="container" style="flex-grow: 1;">
+        {% block body %}{% endblock %}
     </div>
-{% block body %}{% endblock %}
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

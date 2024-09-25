@@ -1,8 +1,7 @@
-body{
+body {
     background: white url("images/background.jpg") no-repeat center center fixed;
     background-size: cover;
 }
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,11 +9,12 @@ body{
 }
 
 /* Global Styles */
+/* Global Styles */
 body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  background-color: #f2f2f2;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #f2f2f2;
 }
 
 .container {
@@ -76,8 +76,10 @@ body {
   color: #53292a;
 }
 
+
 /* Main Styles */
 .main {
-  min-height: calc(100vh - 70px - 50px);
-  padding: 100px 0;
-
+    min-height: calc(100vh - 70px - 50px);
+    padding: 100px 0;
+    transition: background 0.5s;
+}

@@ -1,54 +1,144 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
     <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+        }
+        /* Navbar Styles */
+        .navbar {
+          background-color: #fff;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          z-index: 100;
+        }
+
+        .navbar__nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 70px;
+        }
+
+        .navbar__logo {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #53292a;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+
+        .navbar__logo:hover {
+          transform: translateY(-2px);
+        }
+
+        .navbar__list {
+          display: flex;
+          justify-content: flex-end;
+          list-style: none;
+        }
+
+        .navbar__item {
+          margin-left: 25px;
+        }
+
+        .navbar__link {
+          color: #666;
+          font-size: 1.2rem;
+          font-weight: 500;
+          text-decoration: none;
+          text-transform: uppercase;
+          transition: all 0.3s ease;
+        }
+
+        .navbar__link:hover {
+          color: #53292a;
+        }
+
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-weight: 500;
+            color: #28a745;
+        }
+        .panel {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .panel-heading {
+            background-color: #fff5e6 !important;
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .panel-heading h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        .panel-body {
+            padding: 30px;
+        }
+        .panel-body h2 {
+            color: #555;
+            font-weight: 300;
+        }
+        .panel-body small {
+            font-size: 1.1rem;
+        }
+        .panel-body small span {
+            font-weight: 500;
+            color: #28a745;
+        }
+        .nav-tabs {
+            border-bottom: none;
+            justify-content: flex-end;
+        }
+        .nav-tabs a {
+            padding: 10px 15px;
+            font-size: 1.1rem;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <br><br><br>
     <div class="container">
-        <ul class="nav nav-tabs ">
-             <li role="presentation" class="navbar-right"><a href="/" style="color: #53292A "><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a></li>
-             <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" style="color: #53292A"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi, {{ user.first_name }}</a></li>
+        <ul class="nav nav-tabs">
+             <li role="presentation" class="navbar-right">
+                 <a href="/"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a>
+             </li>
+             <li role="presentation" class="navbar-right">
+                 <a href="/patient_login/profile/"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi, {{ user.first_name }}</a>
+             </li>
         </ul>
         <div class="page-header">
             <h1><i class="fa fa-check-circle-o" aria-hidden="true"></i> Booking Confirmation</h1>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading" style="background-color: floralwhite"><h1>Dr.{{ doctor.first_name }} {{ doctor.last_name }}</h1></div>
+            <div class="panel-heading">
+                <h1>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h1>
+            </div>
             <div class="panel-body">
                 <h2>
                     <small>
-                        Booking Id: {{ booking_id }}
-                        <br>
-                        Name: {{ user.first_name }} {{ user.last_name }}
-                        <br>
-                        Booking Date: {{ booked_date|date:"F jS o" }}
-                        <br>
-                        Booked Slot: {{ booked_slot }}
-                        <br>
-                        Timings:
-                        {% if booked_slot == 1 %}
-                            09:00-10:00
-                        {% elif booked_slot == 2 %}
-                            10:00-11:00
-                        {% elif booked_slot == 3 %}
-                            11:00-12:00
-                        {% elif booked_slot == 4 %}
-                            13:00-14:00
-                        {% elif booked_slot == 5 %}
-                            14:00-15:00
-                        {% elif booked_slot == 6 %}
-                            15:00-16:00
-                        {% elif booked_slot == 7 %}
-                            17:00-18:00
-                        {% endif %}
+                        <span>Booking ID:</span> {{ booking_id }}<br>
+                        <span>Name:</span> {{ user.first_name }} {{ user.last_name }}<br>
+                        <span>Booking Date:</span> {{ booked_date|date:"F jS, Y" }}<br>
+                        <span>Booked Slot:</span> {{ booked_slot }}<br>
                     </small>
                 </h2>
             </div>
         </div>
-        <h1></h1>
     </div>
 {% endblock %}

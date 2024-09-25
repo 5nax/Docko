@@ -1,216 +1,336 @@
+from celery.bin.control import status
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm, PasswordChangeForm
+from django.contrib.auth.views import PasswordResetView
+from datetime import datetime
 from django.http import Http404
 from doctor_login.models import docDetails
-from django.shortcuts import render,redirect
-from patient_login.forms import RegistrationForm, EditProfileForm, scheduleForm
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-from  django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.views.generic import TemplateView
-from  .models import UserProfile
-from datetime import  timedelta
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
+from .models import UserProfile
 from .forms import RegistrationForm, EditProfileForm, scheduleForm
-import datetime
+from doctor_login.models import Appointment  # Import the Appointment model
+from django.contrib import messages  # To display messages
+from django.core.mail import send_mail  # For sending emails
+from datetime import *
 
-def send_confirmation_email(request, booking_id, slotnumber):
-    # Get the user information from the request
-    user = request.user
-    # Define the email subject line
-    subject = 'Booking Confirmation'
-    # Add a personalized greeting
-    greeting = f"Hi {user.first_name},"
-    # Construct the confirmation message
-    message = f"{greeting}<br><br>We wanted to confirm your booking #{booking_id} on {request.user.userprofile.booked_date.strftime('%A, %B %d, %Y')} at {request.user.userprofile.booked_date.strftime('%I:%M %p')}."
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'patient_login/password_reset.html'
+    form_class = PasswordResetForm
 
-    # Add more details about the booking
-    message += "<br><br>Your booking is confirmed and we look forward to seeing you at our location. Please note that if you need to cancel or reschedule your appointment, please let us know at least 24 hours in advance."
 
-    # Add a closing remark
-    message += "<br><br>Thank you for choosing our service. If you have any questions or concerns, please don't hesitate to contact us."
-
-    # Define the sender email address
+# Helper function to send emails
+def send_email(subject, message, recipient_list):
     from_email = 'dockoauto@gmail.com'
-    # Define the recipient email address
-    recipient_list = [user.email]
-    # Send the confirmation email with both plain text and HTML message body
-    send_mail(
-        subject=subject,
-        message='',
-        from_email=from_email,
-        recipient_list=recipient_list,
-        html_message=message
-    )
+    send_mail(subject=subject, message='', from_email=from_email, recipient_list=recipient_list, html_message=message)
+
+def send_confirmation_email(request, booking_id):
+    user = request.user
+    subject = 'Booking Confirmation'
+    message = f"Hi {user.first_name},<br><br>Your booking #{booking_id} is confirmed for {request.session.get('booked_date')}."
+    send_email(subject, message, [user.email])
 
 def send_reminder_email(user, booking_id):
     subject = 'Appointment Reminder'
-    greeting = f"Hi {user.first_name},"
-    message = f"{greeting} This is a reminder that your appointment #{booking_id} is scheduled for tomorrow."
-    message += "Please remember to arrive on time and have all necessary documents with you."
-    message += "Thank you for choosing our service. If you have any questions or concerns, please don't hesitate to contact us."
-    plain_message = strip_tags(message)
-    from_email = 'dockoauto@gmail.com'
-    recipient_list = [user.email]
-    send_mail(subject, plain_message, from_email, recipient_list, html_message=message)
+    message = f"Hi {user.first_name},<br><br>This is a reminder for your appointment #{booking_id} tomorrow. Please arrive on time."
+    send_email(subject, strip_tags(message), [user.email])
+
 def view_profile(request):
     user = request.user
-    try:
-        profile = user.userprofile
-        curr_booking_id = profile.curr_booking_id
-        booked_date = profile.booked_date
-    except UserProfile.DoesNotExist:
-        curr_booking_id = None
-        booked_date = None
 
-    args = {
-        'user': user,
-        'curr_booking_id': curr_booking_id,
-        'booked_date': booked_date
+    # Check if the user has a latest appointment
+    user_profile = user.userprofile
+    latest_appointment = user_profile.latest_appointment
+
+    # Prepare context
+    context = {
+        'username': user.username,
+        'latest_appointment': latest_appointment,  # Pass the appointment object to the template
+        'user': user,  # You can still use the full user object if needed
     }
-    return render(request, 'patient_login/profile.html', args)
+
+    return render(request, 'patient_login/profile.html', context)
+
+
+def current(request):
+    user = request.user
+    try:
+        user_profile = user.userprofile
+        appointments = Appointment.objects.filter(patient=user, status__in=['Pending', 'Confirmed', 'Cancelled',
+                                                                            'Complete']).order_by('-date', '-time')
+
+        # Calculate end_time for each appointment
+        for appointment in appointments:
+            if appointment.time:
+                appointment.end_time = (
+                            datetime.combine(datetime.today(), appointment.time) + timedelta(minutes=60)).time()
+            else:
+                appointment.end_time = None
+
+        context = {
+            'appointments': appointments,
+        }
+        return render(request, 'patient_login/current_booking.html', context)
+    except UserProfile.DoesNotExist:
+        messages.error(request, 'User profile does not exist.')
+
+
+# patient_login/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from doctor_login.models import Appointment, Prescription
+
+
+@login_required
+def patient_view_prescription(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user, status='Complete')
+
+    try:
+        prescription = appointment.prescription
+        prescription_items = prescription.items.all()
+    except Prescription.DoesNotExist:
+        messages.error(request, 'No prescription found for this appointment.')
+        return redirect('patient_dashboard')
+
+    context = {
+        'appointment': appointment,
+        'prescription': prescription,
+        'prescription_items': prescription_items,
+    }
+
+    return render(request, 'patient_login/view_prescription.html', context)
+
+
 
 class schedule(TemplateView):
-    template_name ='schedule.html'
+    template_name = 'schedule.html'
 
-    def get(self,request,doc_id):
+    def get(self, request, doc_id):
         form = scheduleForm()
         try:
-            doctor=docDetails.objects.get(pk=doc_id)
-            curr_date = datetime.datetime.now().strftime ("%d/%m/%Y")
+            doctor = docDetails.objects.get(pk=doc_id)
         except docDetails.DoesNotExist:
-            raise Http404("Invalid Doctor Id.")
-        return render(request, self.template_name,{'doctor':doctor,'form':form,'curr_date':curr_date})
+            raise Http404("Invalid Doctor ID.")
+
+        # Get the selected date from GET parameters; default to today
+        date_str = request.GET.get('date')
+        if date_str:
+            try:
+                selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid date format. Showing today's appointments.")
+                selected_date = datetime.now().date()
+        else:
+            selected_date = datetime.now().date()
+
+        # Format curr_date for display
+        curr_date_display = selected_date.strftime("%d/%m/%Y")
+
+        # Fetch appointments for the doctor on the selected date
+        appointments = Appointment.objects.filter(doctor=doctor, date=selected_date)
+
+        # Define all possible slots
+        all_slots = [
+            {'number': 1, 'time': '09:00-10:00', 'code': 'slot1'},
+            {'number': 2, 'time': '10:00-11:00', 'code': 'slot2'},
+            {'number': 3, 'time': '11:00-12:00', 'code': 'slot3'},
+            {'number': 4, 'time': '13:00-14:00', 'code': 'slot4'},
+            {'number': 5, 'time': '14:00-15:00', 'code': 'slot5'},
+            {'number': 6, 'time': '15:00-16:00', 'code': 'slot6'},
+            {'number': 7, 'time': '17:00-18:00', 'code': 'slot7'},
+        ]
+
+        # Convert appointment times to strings for comparison
+        booked_slots = [appointment.time.strftime('%H:%M') for appointment in appointments]
+
+        # Determine which slots are booked
+        for slot in all_slots:
+            slot_start_time = slot['time'].split('-')[0]  # e.g., '09:00'
+            slot['is_booked'] = slot_start_time in booked_slots
+
+        context = {
+            'doctor': doctor,
+            'form': form,
+            'curr_date': curr_date_display,
+            'slots': all_slots,
+            'today': datetime.now().date(),
+        }
+
+        return render(request, self.template_name, context)
 
     def post(self, request, doc_id):
         form = scheduleForm(request.POST)
-        doctor = docDetails.objects.get(pk=doc_id)
-        curr_user = request.user.userprofile
+        try:
+            doctor = docDetails.objects.get(pk=doc_id)
+        except docDetails.DoesNotExist:
+            raise Http404("Invalid Doctor ID.")
 
-        def book_slot(slot_number, slot_attr):
-            if not getattr(doctor, slot_attr):
-                setattr(doctor, slot_attr, True)
-                doctor.save()
-                return generate_booking_id(slot_number)
-            else:
-                messages.error(request, 'Already booked!')
-                return None
-
-        def generate_booking_id(booked_slot):
-            curr_date = datetime.datetime.now().strftime("%d%m%Y")  # returns date in DDMMYYYY format
-            doc_pk = f"{doctor.pk:0>2}"  # zero-pads doctor.pk to 2 digits
-            user_pk = f"{request.user.pk:0>4}"  # zero-pads request.user.pk to 4 digits
-            booking_id = f"BKID{doc_pk}{user_pk}{curr_date}{booked_slot}"
-            return booking_id
+        # Get the selected date from POST data
+        date_str = request.POST.get('date')
+        if date_str:
+            try:
+                selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid date format.")
+                selected_date = timezone.now().date()
+        else:
+            selected_date = timezone.now().date()
 
         if form.is_valid():
             ss = form.cleaned_data['selected_slot']
+            booked_date = form.cleaned_data['date']
+
+            # Time slot mapping (adjust according to your actual slot times)
             slot_mapping = {
-                'slot1': ('slot1', 'slot1_id'),
-                'slot2': ('slot2', 'slot2_id'),
-                'slot3': ('slot3', 'slot3_id'),
-                'slot4': ('slot4', 'slot4_id'),
-                'slot5': ('slot5', 'slot5_id'),
-                'slot6': ('slot6', 'slot6_id'),
-                'slot7': ('slot7', 'slot7_id'),
+                'slot1': '09:00',
+                'slot2': '10:00',
+                'slot3': '11:00',
+                'slot4': '13:00',
+                'slot5': '14:00',
+                'slot6': '15:00',
+                'slot7': '17:00',
             }
 
-            slot_number, slot_id_attr = slot_mapping[ss]
-            booking_id = book_slot(slot_number, slot_number)
+            slot_time = slot_mapping.get(ss)
+            if not slot_time:
+                messages.error(request, 'Invalid slot selected.')
+                return self.get(request, doc_id)
 
-            if booking_id is not None:
-                setattr(doctor, slot_id_attr, booking_id)
-                doctor.save()
-                booked_date = form.cleaned_data['date']
-                curr_user.curr_booking_id = int(booking_id[10:18])
-                curr_user.booked_date = booked_date
-                curr_user.save()
+            # Check if the selected slot is already booked
+            if Appointment.objects.filter(doctor=doctor, date=booked_date, time=slot_time).exists():
+                messages.error(request, 'This time slot is already booked!')
+                return self.get(request, doc_id)  # Reload the page with updated slot statuses
 
-                args = {'form': form, 'ss': ss, 'doctor': doctor, 'booked_slot': int(slot_number[-1]),
-                        'booking_id': booking_id, 'booked_date': booked_date}  # change booking_date to booked_date
-                send_confirmation_email(request, booking_id, slot_number)
-                return render(request, 'patient_login/confirmation.html', args)
+            # Generate booking ID
+            booking_id = generate_booking_id(request.user, doctor, ss)
 
-            args = {'form': form, 'ss': ss, 'doctor': doctor}
-            return render(request, self.template_name, args)
+            # Create and save the appointment
+            appointment = Appointment.objects.create(
+                patient=request.user,  # The current logged-in user as the patient
+                doctor=doctor,         # The doctor instance
+                date=booked_date,      # The selected booking date
+                time=slot_time,        # The selected time slot
+                status='Pending'
+            )
+
+            # Save the latest appointment in the user's profile
+            user_profile = request.user.userprofile
+            user_profile.latest_appointment = appointment
+            user_profile.save()
+
+            # Send confirmation email
+            self.send_confirmation_email(request, booking_id, slot_time, booked_date)
+
+            # Render confirmation page
+            return render(request, 'patient_login/confirmation.html', {
+                'doctor': doctor,
+                'booked_date': booked_date.strftime("%d/%m/%Y"),
+                'booked_slot': slot_time,
+                'booking_id': booking_id,
+                'status': appointment.status,
+            })
         else:
-            messages.error(request, 'Form is not valid.')
-            args = {'form': form, 'doctor': doctor}
-            return render(request, self.template_name, args)
-def edit_profile(request):
-    if request.method =='POST':
-        form=EditProfileForm(request.POST, instance=request.user)
+            messages.error(request, 'Form submission is invalid.')
+            return self.get(request, doc_id)
 
-        if form.is_valid():
-            form.save()
+    def send_confirmation_email(self, request, booking_id, slot_time, booked_date):
+        user = request.user
+        subject = 'Booking Confirmation'
+        message = (
+            f"Hi {user.first_name},\n\n"
+            f"Your booking #{booking_id} has been confirmed for {booked_date.strftime('%d/%m/%Y')} at {slot_time}.\n"
+            "If you need to cancel or reschedule, please contact us 24 hours in advance.\n\n"
+            "Thank you for choosing our service."
+        )
+        from_email = 'dockoauto@gmail.com'
+        recipient_list = [user.email]
+
+        # Send the email
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            fail_silently=False,
+        )
+def generate_booking_id(user, doctor, booked_slot):
+    curr_date = datetime.now().strftime("%d%m%Y")
+    return f"BKID{doctor.pk:02}{user.pk:04}{curr_date}{booked_slot}"
+
+from django.contrib.auth.decorators import login_required
+from .forms import EditProfileForm, UserProfileForm
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        user_form = EditProfileForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, instance=request.user.userprofile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             return redirect('/patient_login/profile')
     else:
-        form= EditProfileForm(instance=request.user)
-        args = {'form': form}
-        return render(request,'patient_login/edit_profile.html',args)
+        user_form = EditProfileForm(instance=request.user)
+        profile_form = UserProfileForm(instance=request.user.userprofile)
 
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+    return render(request, 'patient_login/edit_profile.html', context)
 
 def change_password(request):
-    if request.method =='POST':
-        form=PasswordChangeForm(data=request.POST, user=request.user)
-
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
-            update_session_auth_hash(request,form.user)
+            update_session_auth_hash(request, form.user)
             return redirect('/patient_login/profile')
-        else:
-            return redirect('/patient_login/profile/change_password/')
     else:
-        form= PasswordChangeForm(user=request.user)
-        args = {'form': form}
-        return render(request,'patient_login/change_password.html',args)
+        form = PasswordChangeForm(user=request.user)
+    return render(request, 'patient_login/change_password.html', {'form': form})
 
 def register(request):
-    if request.method=='POST':
-        form=RegistrationForm(request.POST)
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Successfully Registered')
             return redirect('/patient_login/login/')
-        else:
-            messages.error(request, 'Username already exists')
-            return redirect('/patient_login/register/')
     else:
-        form=RegistrationForm()
-        args={'form':form}
-        return render(request, 'patient_login/reg_form.html', args)
-
+        form = RegistrationForm()
+    return render(request, 'patient_login/reg_form.html', {'form': form})
 
 def index3(request):
     all_docs = docDetails.objects.all()
-    curr_user = request.user
-    for docs in all_docs:
-        docs.cal_availibity()
+    request.session.update({
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'email': request.user.email
+    })
 
-    try:
-        curr_booking_id = curr_user.userprofile.curr_booking_id
-    except UserProfile.DoesNotExist:
-        curr_booking_id = None
+    curr_booking_id = getattr(request.user.userprofile, 'curr_booking_id', None)
+    request.session['curr_booking_id'] = curr_booking_id
 
     if curr_booking_id:
         messages.info(request, 'You already have one appointment.')
-        return render(request,'patient_login/profile.html')
-    else:
-        context = {'all_docs':all_docs, 'curr_user':curr_user}
-        return render(request, 'list_of_docs.html',context)
+        return redirect('view_profile')
+
+    return render(request, 'patient_login/profile.html', {'curr_user': request.user})
 
 def analytics(request):
     all_docs = docDetails.objects.all()
-    for docs in all_docs:
-        docs.cal_availibity()
+    return render(request, 'analytics.html', {'all_docs': all_docs})
 
-    context = {'all_docs':all_docs}
-    return render(request, 'analytics.html',context)
-
-
-def detail(request,doc_id):
+def detail(request, doc_id):
     try:
-        doctor=docDetails.objects.get(pk=doc_id)
+        doctor = docDetails.objects.get(pk=doc_id)
     except docDetails.DoesNotExist:
-        raise Http404("Invalid Doctor Id.")
-    return render(request, 'doc_details.html',{'doctor': doctor})
+        raise Http404("Invalid Doctor ID")
+    return render(request, 'doc_details.html', {'doctor': doctor})

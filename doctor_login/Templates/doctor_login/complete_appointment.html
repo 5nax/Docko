@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Appointment</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin-top: 50px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #343a40;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .formset-form {
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+        }
+
+        .formset-form h4 {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 20px;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .navbar__nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            padding: 0 50px;
+        }
+
+        .navbar__logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #53292a;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar__logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar__list {
+            display: flex;
+            justify-content: flex-end;
+            list-style: none;
+        }
+
+        .navbar__item {
+            margin-left: 25px;
+        }
+
+        .navbar__link {
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .navbar__link:hover {
+            color: #53292a;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar__nav">
+            <a href="#" class="navbar__logo">Doctor's Portal</a>
+            <ul class="navbar__list">
+                <li class="navbar__item">
+                    <a href="http://127.0.0.1:8000/doctor_login/doctor_dashboard/" class="navbar__link">Dashboard</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="#" class="navbar__link">Appointments</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="#" class="navbar__link">Profile</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="#" class="navbar__link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Complete Appointment</h2>
+        <h3>Appointment Details</h3>
+        <p><strong>Patient:</strong> {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</p>
+        <p><strong>Date:</strong> {{ appointment.date }}</p>
+        <p><strong>Time:</strong> {{ appointment.time }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-section">
+                <h3>Prescription Details</h3>
+                {{ form.as_p }}
+            </div>
+
+            <div class="form-section">
+                <h3>Prescription Items</h3>
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    <div class="formset-form">
+                        <h4>Medicine {{ forloop.counter }}</h4>
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Save Prescription and Complete Appointment</button>
+        </form>
+    </div>
+
+</body>
+</html>

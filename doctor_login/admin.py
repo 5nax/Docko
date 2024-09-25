@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
-
 from .models import docDetails
 
-admin.site.register(docDetails)
+@admin.register(docDetails)
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'specialization', 'availibity')

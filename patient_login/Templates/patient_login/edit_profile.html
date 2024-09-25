@@ -1,63 +1,129 @@
-{% block head %}
+<!-- templates/patient_login/edit_profile.html -->
+{% extends 'base.html' %}
 
-<title>Edit Profile</title>
+{% block head %}
+    <!-- Include Google Fonts and Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+    <!-- Bootstrap and Custom Styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Edit Profile</title>
 {% endblock %}
+
 {% block body %}
 {% load static %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+
+<!-- Custom CSS -->
 <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
 <style>
-body {
-background-image: url('/static/images/background.jpg');
-background-size: cover;
-font-family: 'Roboto', sans-serif;
-}
-    .container {
-        margin-top: 50px;
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f9f9f9;
+        background-image: url('{% static "images/background.jpg" %}');
+        background-size: cover;
     }
-    .page-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 50px;
-}
+    .container {
+        max-width: 700px;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 30px;
+        margin-top: 50px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    h1, h4, h5 {
+        color: #2C3E50;
+    }
+    /* Navbar Styles */
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+    }
 
-form {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
-    margin: 0 auto;
-}
+    .navbar__nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
 
-.navbar {
-    background-color: #53292A;
-}
+    .navbar__logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #53292a;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
 
-.navbar a {
-    color: white;
-}
+    .navbar__logo:hover {
+      transform: translateY(-2px);
+    }
 
-button[type="submit"], button[type="reset"] {
-    background-color: #53292A;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+    .navbar__list {
+      display: flex;
+      justify-content: flex-end;
+      list-style: none;
+    }
 
-button[type="submit"]:hover, button[type="reset"]:hover {
-    background-color: #fff;
-    color: #53292A;
-}
+    .navbar__item {
+      margin-left: 25px;
+    }
+
+    .navbar__link {
+      color: #666;
+      font-size: 1.2rem;
+      font-weight: 500;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .navbar__link:hover {
+      color: #53292a;
+    }
+
+
+    button {
+        color: #ffffff;
+        background-color: #18BC9C;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    button:hover {
+        background-color: #1abc9c;
+    }
+    .card {
+        background-color: #FFFFFF;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .form-group label {
+        font-weight: bold;
+    }
+    .btn-default {
+        background-color: #18BC9C;
+        color: #fff;
+    }
+    .btn-default:hover {
+        background-color: #1abc9c;
+        color: #fff;
+    }
 </style>
+
+<!-- Navigation Bar -->
 <nav class="navbar navbar-expand-sm">
     <ul class="navbar-nav">
         <li class="nav-item">
@@ -66,22 +132,86 @@ button[type="submit"]:hover, button[type="reset"]:hover {
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="/" style="color: white"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link nav-link" style="color: #E74C3C;">
+                    <i class="fa fa-power-off" aria-hidden="true"></i> Logout
+                </button>
+            </form>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/patient_login/profile/" style="color: white">Hi, {{ user.first_name }}</a>
+            <a class="nav-link active" href="/patient_login/profile/">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi, {{ user.first_name }}
+            </a>
         </li>
     </ul>
 </nav>
+
+<!-- Edit Profile Section -->
 <div class="container">
-    <div class="page-header">
-        <h1><br><small style="color: Black">Hi {{ user.first_name }}, What's up today?</small></h1>
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">Edit Your Profile</h1>
+            <hr>
+            <form method="post">
+                {% csrf_token %}
+                <!-- User Form -->
+                <h4>Personal Information</h4>
+                <div class="form-group">
+                    {{ user_form.first_name.label_tag }}
+                    {{ user_form.first_name }}
+                    {% if user_form.first_name.errors %}
+                        <div class="text-danger">{{ user_form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ user_form.last_name.label_tag }}
+                    {{ user_form.last_name }}
+                    {% if user_form.last_name.errors %}
+                        <div class="text-danger">{{ user_form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ user_form.email.label_tag }}
+                    {{ user_form.email }}
+                    {% if user_form.email.errors %}
+                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- UserProfile Form -->
+                <h4>Additional Information</h4>
+                <div class="form-group">
+                    {{ profile_form.phone.label_tag }}
+                    {{ profile_form.phone }}
+                    {% if profile_form.phone.errors %}
+                        <div class="text-danger">{{ profile_form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.dob.label_tag }}
+                    {{ profile_form.dob }}
+                    {% if profile_form.dob.errors %}
+                        <div class="text-danger">{{ profile_form.dob.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.gender.label_tag }}
+                    {{ profile_form.gender }}
+                    {% if profile_form.gender.errors %}
+                        <div class="text-danger">{{ profile_form.gender.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='/patient_login/profile/'">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-default" style="background-color:#53292A">Save</button>
-        <button type="reset" class="btn btn-default" style="background-color:#53292A" onclick="location.href='/patient_login/profile/'">Cancel</button>
-    </form>
 </div>
+
+<br><br>
 {% endblock %}

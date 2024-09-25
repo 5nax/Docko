@@ -1,0 +1,159 @@
+{% load crispy_forms_tags %}
+{% block title %}Prediction Result{% endblock %}
+
+{% block content %}
+<style>
+    /* Basic container styling */
+    .container {
+        margin: 40px auto;
+        padding: 20px;
+        max-width: 80%;
+    }
+
+    /* Navbar and general styles */
+    .navbar {
+        background-color: #fff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+    }
+
+    /* Card styling */
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        color: #343a40;
+        font-weight: 700;
+    }
+
+    .card-text {
+        color: #6c757d;
+    }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+        padding: 10px 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #138496;
+        border-color: #138496;
+    }
+
+    /* Styling for the predicted disease and result section */
+    h1 {
+        color: #343a40;
+        font-weight: 700;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        color: #28a745;
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .no-doctors-message {
+        font-size: 1.2rem;
+        color: #dc3545;
+        margin: 20px 0;
+    }
+
+    /* Subtle animations */
+    .fade-in {
+        animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container fade-in">
+    <h1 class="text-center mb-4">Prediction Result</h1>
+    <p class="text-center">Based on the symptoms you selected, the predicted disease is:</p>
+    <h2 class="text-center text-success">{{ predicted_disease }}</h2>
+
+    <div class="container">
+        <div class="row">
+            {% if recommended_doctors %}
+                {% for doctor in recommended_doctors %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ doctor.first_name }} {{ doctor.last_name }}</h5>
+                                <p class="card-text">
+                                    <strong>Specialization:</strong> {{ doctor.specialization }}<br>
+                                    <strong>Experience:</strong> {{ doctor.experience }} years<br>
+                                    <strong>Fees:</strong> ${{ doctor.fees }}<br>
+                                    <strong>Address:</strong> {{ doctor.Address }}, {{ doctor.City }}, {{ doctor.State }}<br>
+                                    <strong>Email:</strong> {{ doctor.email }}<br>
+                                    <strong>Phone:</strong> {{ doctor.phone }}
+                                </p>
+                                <!-- Modify the button to link to the doctor's scheduling page -->
+                                <a href="{% url 'schedule' doctor.pk %}" class="btn btn-primary">Book Appointment</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-doctors-message text-center">No doctors found for this specialization. Here are some general recommendations:</div>
+                {% for fallback_doctor in fallback_doctors %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ fallback_doctor.first_name }} {{ fallback_doctor.last_name }}</h5>
+                                <p class="card-text">
+                                    <strong>Specialization:</strong> {{ fallback_doctor.specialization }}<br>
+                                    <strong>Experience:</strong> {{ fallback_doctor.experience }} years<br>
+                                    <strong>Fees:</strong> ${{ fallback_doctor.fees }}<br>
+                                    <strong>Address:</strong> {{ fallback_doctor.Address }}, {{ fallback_doctor.City }}, {{ fallback_doctor.State }}<br>
+                                    <strong>Email:</strong> {{ fallback_doctor.email }}<br>
+                                    <strong>Phone:</strong> {{ fallback_doctor.phone }}
+                                </p>
+                                <a href="{% url 'schedule' fallback_doctor.pk %}" class="btn btn-primary">Book Appointment</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'predict_disease' %}" class="btn btn-secondary">Predict Again</a>
+    </div>
+</div>
+{% endblock %}

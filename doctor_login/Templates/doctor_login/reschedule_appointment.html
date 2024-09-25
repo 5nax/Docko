@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reschedule Appointment</title>
+    <style>
+        /* Basic styling for the form */
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        /* Navbar Styles */
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .navbar__nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .navbar__logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #53292a;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar__logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar__list {
+            display: flex;
+            justify-content: flex-end;
+            list-style: none;
+        }
+
+        .navbar__item {
+            margin-left: 25px;
+        }
+
+        .navbar__link {
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .navbar__link:hover {
+            color: #53292a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Reschedule Appointment</h2>
+        <p><strong>Patient:</strong> {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</p>
+        <p><strong>Current Date:</strong> {{ appointment.date }}</p>
+        <p><strong>Current Time:</strong> {{ appointment.time }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="new_date">New Date</label>
+                <input type="date" id="new_date" name="new_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="new_time">New Time</label>
+                <select id="new_time" name="new_time" required>
+                    <option value="09:00">09:00 AM</option>
+                    <option value="09:15">09:15 AM</option>
+                    <option value="09:30">09:30 AM</option>
+                    <option value="09:45">09:45 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="10:15">10:15 AM</option>
+                    <option value="10:30">10:30 AM</option>
+                    <option value="10:45">10:45 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="11:15">11:15 AM</option>
+                    <option value="11:30">11:30 AM</option>
+                    <option value="11:45">11:45 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="12:15">12:15 PM</option>
+                    <option value="12:30">12:30 PM</option>
+                    <option value="12:45">12:45 PM</option>
+                    <option value="13:00">01:00 PM</option>
+                    <option value="13:15">01:15 PM</option>
+                    <option value="13:30">01:30 PM</option>
+                    <option value="13:45">01:45 PM</option>
+                    <option value="14:00">02:00 PM</option>
+                    <option value="14:15">02:15 PM</option>
+                    <option value="14:30">02:30 PM</option>
+                    <option value="14:45">02:45 PM</option>
+                    <option value="15:00">03:00 PM</option>
+                    <option value="15:15">03:15 PM</option>
+                    <option value="15:30">03:30 PM</option>
+                    <option value="15:45">03:45 PM</option>
+                    <option value="16:00">04:00 PM</option>
+                    <option value="16:15">04:15 PM</option>
+                    <option value="16:30">04:30 PM</option>
+                    <option value="16:45">04:45 PM</option>
+                    <option value="17:00">05:00 PM</option>
+                </select>
+            </div>
+
+            {% if form.errors %}
+                <div class="error">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+            <button type="submit">Reschedule</button>
+        </form>
+
+        <br>
+        <a href="{% url 'doctor_dashboard' %}">Back to Dashboard</a>
+    </div>
+</body>
+</html>

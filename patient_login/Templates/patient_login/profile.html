@@ -1,140 +1,166 @@
 {% extends 'base.html' %}
-{% block head %}
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<title>Profile</title>
-{% endblock %}
-{% block body %}
 {% load static %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+{% block head %}
+    <!-- Include Google Fonts and Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://use.fontawesome.com/fc9938d86d.js"></script>
+    <!-- Bootstrap and Custom Styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Profile</title>
+{% endblock %}
+
+{% block body %}
 <style>
     body {
+        background-image: url('{% static "images/background.jpg" %}');
+        background-size: cover;
         font-family: 'Roboto', sans-serif;
+        background-attachment: fixed;
+        background-position: center;
     }
-    .container {
-        max-width: 900px;
-        background-color: rgba(255, 255, 255, 0.7);
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .profile-container {
+        background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 100px auto; /* Centers the form */
     }
-    h1, h4 {
-        color: #53292A;
+
+    .navbar {
+        background-color: #002855;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
     }
-    .nav-tabs .nav-link {
-        color: #53292A;
+
+    .navbar__logo {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
     }
-    .nav-tabs .nav-link:hover {
-        color: #7B4B3A;
+
+    .navbar__list {
+        display: flex;
+        justify-content: flex-end;
+        list-style: none;
     }
-    .nav-tabs .nav-link.active {
-        color: #7B4B3A;
-        background-color: transparent;
-        border: none;
+
+    .navbar__item {
+        margin-left: 25px;
     }
-    .nav-tabs {
-        border-bottom: none;
+
+    .navbar__link {
+        color: #fff;
+        font-size: 1.2rem;
+        text-transform: uppercase;
     }
-    button {
-        color: #53292A;
-        border: 1px solid #53292A;
-        transition: background-color 0.2s, color 0.2s;
+
+    .card-body h4 {
+        margin-bottom: 20px;
     }
-    button:hover {
-        background-color: #7B4B3A;
-        color: white;
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
     }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 20px;
+            margin: 50px auto;
+            max-width: 90%;
+        }
+    }
+
 </style>
-<br><br><br>
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li role="presentation" class="navbar-right"><a href="/" class="nav-link"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout</a></li>
-        <li role="presentation" class="navbar-right"><a href="/patient_login/profile/" class="nav-link active"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi,{{ user.first_name }}</a></li>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-sm">
+    <a class="navbar-brand" href="/" style="color: white;">DaDps</a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/" style="color: white;">Home</a>
+        </li>
     </ul>
-    <div class="page-header">
-        <h1>My Profile<br><small>Hi {{ user.first_name }}, what's up today?</small></h1>
+</nav>
+
+<!-- Profile Section -->
+<div class="profile-container">
+    <ul class="nav nav-tabs">
+
+        <li class="navbar-right">
+            <a href="/patient_login/profile/" class="nav-link active">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i> Hi, {{ username }}
+            </a>
+        </li>
+    </ul>
+
+    <!-- User Info Card -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h1 class="card-title">Welcome, {{ user.first_name }}!</h1>
+            <h4>Here's your profile information:</h4>
+            <hr>
+            <p><i class="fa fa-user icon"></i> <b>First name:</b> {{ user.first_name }}</p>
+            <p><i class="fa fa-user icon"></i> <b>Last name:</b> {{ user.last_name }}</p>
+            <p><i class="fa fa-envelope icon"></i> <b>Email:</b> {{ user.email }}</p>
+            <p><i class="fa fa-phone icon"></i> <b>Phone number:</b> {{ user.userprofile.phone }}</p>
+            <button onclick="location.href='edit/'" class="btn btn-primary">Edit Profile</button>
+        </div>
     </div>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning" role="alert" style="background-color: floralwhite; opacity: 0.7">
-                <strong>Oops! </strong>{{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-    <p>
-        <h4><b>First name:</b> {{ user.first_name }}</h4>
-        <h4><b>Last name:</b> {{ user.last_name }}</h4>
-        <h4><b>Email:</b> {{ user.email }}</h4>
-        <h4><b>Phone no.:</b> {{ user.userprofile.phone }}</h4>
-</p>
-<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#moreDetails">Show More Details</button>
-<div id="moreDetails" class="collapse">
-<p>
-<h4><b>Username:</b> {{ user.username }}</h4>
-<h4><b>DOB:</b> {{ user.userprofile.dob }}</h4>
-<h4><b>Gender:</b> {{ user.userprofile.gender }}</h4>
-</p>
-<div class="row">
-<div class="col-md-4">
-<div class="panel panel-default">
-<div class="panel-body" style="background-color: floralwhite">
-<h4><b>Current Booking ID: </b></h4>
-</div>
-<div class="panel-footer" style="background-color: antiquewhite">
-<h4>
-{% if user.userprofile.curr_booking_id %}
-{{ user.userprofile.curr_booking_id }}
-{% else %}
-<h4> Seems, you've not booked any appointment yet!</h4>
-{% endif %}
-</h4>
-    <div class="row">
-    <div class="col-md-4">
-        <div class="panel panel-default">
 
-            <div class="panel-footer" style="background-color: antiquewhite">
+    <!-- Appointment Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Your Latest Appointment:</h4>
+            {% if latest_appointment %}
+                <div class="appointment-info">
+                    <h5><i class="fa fa-calendar icon"></i> Appointment Date: {{ latest_appointment.date }}</h5>
+                    <p><i class="fa fa-clock-o icon"></i> Time: {{ latest_appointment.time }}</p>
+                    <p><i class="fa fa-user-md icon"></i> Doctor: {{ latest_appointment.doctor.first_name }} {{ latest_appointment.doctor.last_name }}</p>
+                    <p><i class="fa fa-info-circle icon"></i> Status: <span class="badge badge-info">{{ latest_appointment.status }}</span></p>
+                </div>
+            {% else %}
+                <p>No appointments booked yet. Why not schedule one?</p>
+            {% endif %}
+        </div>
+    </div>
 
-                {% if user.userprofile.curr_booking_id %}
-                    <p><b>Booking Date:</b> {{ user.userprofile.booked_date }}</p>
-                    <p><b>Booking Slot:</b>
-                        {% if 'slot1' in user.userprofile.curr_booking_id %}
-                            Slot 1
-                        {% elif 'slot2' in user.userprofile.curr_booking_id %}
-                            Slot 2
-                        {% elif 'slot3' in user.userprofile.curr_booking_id %}
-                            Slot 3
-                        {% elif 'slot4' in user.userprofile.curr_booking_id %}
-                            Slot 4
-                        {% elif 'slot5' in user.userprofile.curr_booking_id %}
-                            Slot 5
-                        {% elif 'slot6' in user.userprofile.curr_booking_id %}
-                            Slot 6
-                        {% elif 'slot7' in user.userprofile.curr_booking_id %}
-                            Slot 7
-                        {% endif %}
-                    </p>
-                {% endif %}
+    <!-- Show More Details Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <button class="btn btn-secondary" data-toggle="collapse" data-target="#moreDetails">Show More Details</button>
+            <div id="moreDetails" class="collapse mt-3">
+                <h5><i class="fa fa-calendar icon"></i> Date of Birth: {{ user.userprofile.dob }}</h5>
+                <h5><i class="fa fa-venus-mars icon"></i> Gender: {{ user.userprofile.gender }}</h5>
             </div>
         </div>
     </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="mt-3">
-    <button type="submit" class="btn btn-default" onclick="location.href='edit/'">Edit</button>
-    <button type="submit" class="btn btn-default" onclick="location.href='/'">Back</button>
-    <button type="submit" class="btn btn-default" onclick="location.href='change_password/'">Change Password</button>
+
+    <!-- Footer Buttons -->
+    <div class="mt-4 text-center">
+        <button onclick="location.href='/'" class="btn btn-success">Back to Home</button>
+        <button onclick="location.href='change_password/'" class="btn btn-warning">Change Password</button>
+        <!-- Logout Button in Footer -->
+        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fa fa-power-off" aria-hidden="true"></i> Logout
+            </button>
+        </form>
+    </div>
 </div>
 
-</div>
-<br>
-<br>
+<br><br>
 {% endblock %}

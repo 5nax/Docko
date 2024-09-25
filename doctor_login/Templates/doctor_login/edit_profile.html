@@ -1,0 +1,38 @@
+<!-- templates/doctor_login/edit_profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+    <h2>Edit Profile</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Personal Information</legend>
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+        </fieldset>
+        <button type="submit" name="update_profile">Update Profile</button>
+    </form>
+
+    <h2>Change Password</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ password_form.as_p }}
+        <button type="submit" name="change_password">Change Password</button>
+    </form>
+
+    <a href="{% url 'doctor_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

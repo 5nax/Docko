@@ -1,15 +1,72 @@
+<!-- patient_login/templates/patient_login/appointments.html -->
 {% extends 'base.html' %}
 
-{% block body %}
+{% block head %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <title>My Appointments</title>
+{% endblock %}
 
-<div class="container">
-    <h1>Current Booking</h1>
-    <h4><b>Booking ID:</b> {{ booking_id }}</h4>
-    {% if booking_date %}
-        <h4><b>Booking Date:</b> {{ booking_date|date:"F d, Y" }}</h4>
-    {% endif %}
-    <h4><b>Booking Time:</b> {{ booking_time }}</h4>
-    <br>
-    <button type="submit" class="btn btn-default" onclick="location.href='/patient_login/profile/'">Back to Profile</button>
-</div>
+{% block body %}
+    <div class="container">
+        <br><br>
+        <h2>My Appointments</h2>
+        <hr>
+
+        {% if appointments %}
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments %}
+                        <tr>
+                            <td>Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</td>
+                            <td>{{ appointment.date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if appointment.time and appointment.end_time %}
+                                    {{ appointment.time|time:"H:i" }} - {{ appointment.end_time|time:"H:i" }}
+                                {% elif appointment.time %}
+                                    {{ appointment.time|time:"H:i" }} - N/A
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if appointment.status == 'Pending' %}
+                                    <span class="label label-warning">Pending</span>
+                                {% elif appointment.status == 'Confirmed' %}
+                                    <span class="label label-success">Confirmed</span>
+                                {% elif appointment.status == 'Cancelled' %}
+                                    <span class="label label-danger">Cancelled</span>
+                                {% elif appointment.status == 'Complete' %}
+                                    <span class="label label-info">Complete</span>
+                                {% else %}
+                                    <span class="label label-default">{{ appointment.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if appointment.status == 'Complete' and appointment.prescription %}
+                                    <a href="{% url 'patient_view_prescription' appointment.id %}" class="btn btn-primary btn-sm">View Prescription</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">
+                <strong>No Appointments Found!</strong> You haven't booked any appointments yet.
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

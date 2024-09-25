@@ -1,54 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
 {% block head %}
-<title>Login</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}">
 {% endblock %}
 
-{% block body%}
-{% load static %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://use.fontawesome.com/fc9938d86d.js"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}" />
+{% block body %}
 <style>
-body {
-background-image: url('/static/images/background.jpg');
-background-size: cover;
-font-family: 'Roboto', sans-serif;
-}
-    .container {
-        margin-top: 50px;
+    body {
+        background-image: url('{% static "images/background.jpg" %}');
+        background-size: cover;
+        font-family: 'Roboto', sans-serif;
+        background-attachment: fixed;
+        background-position: center;
     }
 
-    .page-header {
+    .form-container {
+        background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        margin: 100px auto; /* Centers the form */
+    }
+
+    h1, .form-container small {
         text-align: center;
-        color: Black;
-        margin-bottom: 50px;
+        margin-bottom: 30px;
     }
 
-    form {
-        background-color: #fff;
-        border-radius: 5px;
-        padding: 20px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    input[type="text"], input[type="password"] {
+    form input[type="text"], form input[type="password"] {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         margin-bottom: 20px;
-        border: none;
+        border: 1px solid #ddd;
         border-radius: 5px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        font-size: 16px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    form input:focus {
+        outline: none;
+        border-color: #53292a;
+        box-shadow: 0 0 8px rgba(83, 41, 42, 0.3);
     }
 
     button[type="submit"] {
         background-color: #53292a;
-        color: #000;
+        color: white;
         border: none;
+        padding: 12px 20px;
+        width: 100%;
         border-radius: 5px;
-        padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -57,40 +62,121 @@ font-family: 'Roboto', sans-serif;
     button[type="submit"]:hover {
         background-color: #fff;
         color: #53292A;
+        border: 1px solid #53292A;
     }
 
+    /* Navbar Styles */
     .navbar {
-        background-color: #53292A;
+        background-color: #002855;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
     }
 
-    .navbar a {
-        color: white;
+    .navbar__nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
     }
+
+    .navbar__logo {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .navbar__logo:hover {
+        transform: translateY(-2px);
+    }
+
+    .navbar__list {
+        display: flex;
+        justify-content: flex-end;
+        list-style: none;
+    }
+
+    .navbar__item {
+        margin-left: 25px;
+    }
+
+    .navbar__link {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    .navbar__link:hover {
+        color: #ddd;
+    }
+
+    /* Forgot password link styling */
+    .forgot-password {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .forgot-password a {
+        color: #53292A;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        color: #000;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px;
+            margin: 50px auto;
+            max-width: 90%;
+        }
+    }
+
 </style>
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-sm">
-    <ul class="navbar-nav">
+    <a class="navbar-brand" href="/" style="color: white;">DaDps</a>
+    <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="/" style="color: white;">Home</a>
         </li>
     </ul>
 </nav>
-<div class="container">
-    <div class="page-header">
-        <h1>Patient Login<br></h1>
-    </div>
 
+<div class="form-container">
+    <h1>Login</h1>
+
+    <!-- Display Messages -->
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-                <li class="{{ message.tags }} "style="color: green">{{ message }}</li>
+                <li class="{{ message.tags }}" style="color: green">{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
 
-    <form method="post" style="max-width: 400px; margin: 0 auto;">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-default" type="submit" style="background-color:antiquewhite">Login</button>
+        <button type="submit">Login</button>
     </form>
+
+    <!-- Added Forgot Password Link -->
+    <div class="forgot-password">
+        <a href="{% url 'password_reset' %}">Forgot password?</a>
+    </div>
 </div>
+
 {% endblock %}

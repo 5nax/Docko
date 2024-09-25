@@ -1,0 +1,90 @@
+<!-- templates/predictor/predict.html -->
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+        }
+        h1 {
+            color: #343a40;
+            font-weight: 700;
+        }
+        .btn-check:checked + .btn-outline-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-outline-primary {
+            margin: 5px;
+        }
+        .btn-outline-primary.active {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-group-toggle .btn {
+            margin-bottom: 10px;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            border-color: #28a745;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Disease Prediction</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="font-weight-bold">Select your symptoms:</label>
+                {% for category, choices in form.symptoms.field.choices %}
+                    <h5 class="mt-3">{{ category }}</h5>
+                    <div class="btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                        {% for value, display in choices %}
+                            <label class="btn btn-outline-primary m-1">
+                                <input type="checkbox" name="symptoms" value="{{ value }}" autocomplete="off"> {{ display }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">Predict Disease</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Toggle active class on button click
+        $(document).ready(function(){
+            $('.btn-group-toggle .btn').click(function(){
+                $(this).toggleClass('active');
+            });
+        });
+    </script>
+</body>
+</html>

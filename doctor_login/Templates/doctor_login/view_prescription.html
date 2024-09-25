@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Prescription</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #343a40;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .btn-back {
+            margin-top: 20px;
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .follow-up {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Prescription for Appointment #{{ appointment.id }}</h2>
+        <p><strong>Patient:</strong> {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</p>
+        <p><strong>Date:</strong> {{ appointment.date }}</p>
+        <p><strong>Time:</strong> {{ appointment.time }}</p>
+
+        <h3>Prescription Items</h3>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Dosage</th>
+                    <th>Frequency</th>
+                    <th>Duration (Months)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in prescription_items %}
+                    <tr>
+                        <td>{{ item.medicine_name }}</td>
+                        <td>{{ item.dosage }}</td>
+                        <td>{{ item.frequency }}</td>
+                        <td>{{ item.duration_months }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if prescription.follow_up_date %}
+            <p class="follow-up"><strong>Follow-up Date:</strong> {{ prescription.follow_up_date }}</p>
+        {% endif %}
+
+        <a href="{% url 'doctor_dashboard' %}" class="btn btn-primary btn-back">Back to Dashboard</a>
+    </div>
+
+</body>
+</html>

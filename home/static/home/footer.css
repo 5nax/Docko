@@ -4,10 +4,10 @@ docs.css:192
     text-align: left;
 }
 .bs-docs-footer {
-    padding-top: 10px;
-    padding-bottom: 20px;
+    padding: 20px;
     margin-top: 350px;
     color: antiquewhite;
     text-align: center;
     background-color: #53292A;
-  }
+    border-radius: 10px; /* Rounded corners */
+}
