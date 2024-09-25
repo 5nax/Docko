@@ -1,38 +1,212 @@
-<!-- templates/doctor_login/edit_profile.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Edit Profile</title>
-    <!-- Add your CSS links here -->
+    <style>
+        /* Container styling */
+        .container {
+            max-width: 480px;
+            margin: 50px auto;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading styles */
+        h2 {
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* Message styles */
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .message.success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        /* Form styling */
+        form {
+            margin-bottom: 30px;
+        }
+
+        fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        legend {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #333;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        /* Button styling */
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Link styling */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Edit Profile</h2>
 
-    {% if messages %}
-        {% for message in messages %}
-            <p {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+    <div class="container">
+        <h2>Edit Profile</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        <fieldset>
-            <legend>Personal Information</legend>
-            {{ user_form.as_p }}
-            {{ profile_form.as_p }}
-        </fieldset>
-        <button type="submit" name="update_profile">Update Profile</button>
-    </form>
+        <!-- Display Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-    <h2>Change Password</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ password_form.as_p }}
-        <button type="submit" name="change_password">Change Password</button>
-    </form>
+        <!-- Update Profile Form -->
+        <form method="post">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Personal Information</legend>
 
-    <a href="{% url 'doctor_dashboard' %}">Back to Dashboard</a>
+                <!-- User Form Fields -->
+                {% for field in user_form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="message error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <!-- Profile Form Fields -->
+                {% for field in profile_form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="message error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" name="update_profile">Update Profile</button>
+        </form>
+
+        <!-- Change Password Form -->
+        <h2>Change Password</h2>
+        <form method="post">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Password Change</legend>
+
+                <!-- Password Form Fields -->
+                {% for field in password_form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="message error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" name="change_password">Change Password</button>
+        </form>
+
+        <!-- Back to Dashboard Link -->
+        <a href="{% url 'doctor_dashboard' %}" class="back-link">Back to Dashboard</a>
+    </div>
 </body>
 </html>

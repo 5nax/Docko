@@ -52,7 +52,9 @@
             <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
             <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
             <p><strong>Address:</strong> {{ doctor.address }}</p>
-            <button class="btn btn-edit">Edit Profile</button>
+            <a href="{% url 'edit_profile' %}">Edit Profile</a>
+    <a href="{% url 'doctor_dashboard' %}">Back to Dashboard</a>
+    <a href="{% url 'logout' %}">Logout</a>
         </div>
     </div>
 {% endblock %}

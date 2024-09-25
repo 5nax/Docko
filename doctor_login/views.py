@@ -6,7 +6,12 @@ from django.contrib.auth import authenticate, login
 from .models import Appointment, Prescription
 from doctor_login.models import docDetails
 from .utils import free_slot, assign_slot
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
 
+def send_email(subject, message, recipient_list):
+    from_email = 'dockoauto@gmail.com'
+    send_mail(subject=subject, message=strip_tags(message), from_email=from_email, recipient_list=recipient_list, html_message=message)
 
 def asr(request):
    all_docs = docDetails.objects.all()
@@ -84,7 +89,6 @@ from .forms import PrescriptionForm, PrescriptionItemFormSet
 
 @login_required
 def complete_appointment(request, appointment_id):
-    # Ensure the appointment exists and is linked to the logged-in doctor
     appointment = get_object_or_404(Appointment, id=appointment_id, doctor=request.user.doctor_profile)
 
     if appointment.status == 'Complete':
@@ -109,16 +113,22 @@ def complete_appointment(request, appointment_id):
             formset.instance = prescription
             formset.save()
 
-            # Schedule a follow-up appointment if a date is provided
+            # Schedule a follow-up appointment if applicable
+            follow_up_message = ""
             if prescription.follow_up_date:
-                # You can customize the time or other details as needed
                 Appointment.objects.create(
                     patient=appointment.patient,
                     doctor=appointment.doctor,
                     date=prescription.follow_up_date,
-                    time=appointment.time,  # You might want to allow selecting a new time
+                    time=appointment.time,
                     status='Pending'
                 )
+                follow_up_message = f" A follow-up appointment has been scheduled for {prescription.follow_up_date}."
+
+            # Sending email notification
+            subject = 'Appointment Completed'
+            message = f"Hi {appointment.patient.first_name},<br><br>Your appointment #{appointment_id} has been completed. Your prescription has been saved, and you can view your reports on our website.{follow_up_message}"
+            send_email(subject, message, [appointment.patient.email])
 
             messages.success(request, 'Appointment marked as complete and prescription saved.')
             return redirect('doctor_dashboard')
@@ -128,14 +138,8 @@ def complete_appointment(request, appointment_id):
         form = PrescriptionForm()
         formset = PrescriptionItemFormSet()
 
-    context = {
-        'appointment': appointment,
-        'form': form,
-        'formset': formset,
-    }
-
+    context = {'appointment': appointment, 'form': form, 'formset': formset}
     return render(request, 'doctor_login/complete_appointment.html', context)
-
 
 # Cancel an appointment
 # doctor_login/views.py
@@ -147,9 +151,6 @@ from .utils import free_slot  # Import the helper function
 
 
 def cancel_appointment(request, appointment_id):
-    """
-    Cancels an appointment and frees up the corresponding slot.
-    """
     appointment = get_object_or_404(Appointment, id=appointment_id)
 
     if appointment.status == 'Cancelled':
@@ -163,6 +164,11 @@ def cancel_appointment(request, appointment_id):
     doctor = appointment.doctor
     free_slot(doctor, appointment.id)
 
+    # Sending email notification
+    subject = 'Appointment Cancelled'
+    message = f"Hi {appointment.patient.first_name},<br><br>Your appointment #{appointment_id} has been cancelled. Please visit our website if you wish to book a new appointment."
+    send_email(subject, message, [appointment.patient.email])
+
     messages.success(request, 'Appointment has been successfully cancelled and the slot is now free.')
     return redirect('doctor_dashboard')
 
@@ -174,10 +180,6 @@ from .forms import RescheduleAppointmentForm
 
 @login_required
 def reschedule_appointment(request, appointment_id):
-    """
-    Reschedules an appointment by deleting the old one and creating a new one.
-    """
-    # Fetch the appointment ensuring it belongs to the logged-in doctor
     appointment = get_object_or_404(Appointment, id=appointment_id, doctor=request.user.doctor_profile)
 
     if appointment.status != 'Pending':
@@ -188,7 +190,7 @@ def reschedule_appointment(request, appointment_id):
         form = RescheduleAppointmentForm(request.POST)
         if form.is_valid():
             new_date = form.cleaned_data['new_date']
-            new_time = form.cleaned_data.get('new_time')  # Optional
+            new_time = form.cleaned_data.get('new_time')
 
             # Free the current slot
             doctor = appointment.doctor
@@ -207,29 +209,25 @@ def reschedule_appointment(request, appointment_id):
             )
 
             try:
-                # Assign a new slot to the new appointment
                 assign_slot(doctor, new_appointment)
             except Exception as e:
                 messages.error(request, f'Rescheduling failed: {str(e)}')
-                # Optionally, you might want to delete the new appointment if slot assignment fails
                 new_appointment.delete()
                 return redirect('doctor_dashboard')
+
+            # Sending email notification
+            subject = 'Appointment Rescheduled'
+            message = f"Hi {appointment.patient.first_name},<br><br>Your appointment #{appointment_id} has been rescheduled to {new_date} at {new_time}. Please visit our website to view further details and reports."
+            send_email(subject, message, [appointment.patient.email])
 
             messages.success(request, 'Appointment has been successfully rescheduled.')
             return redirect('doctor_dashboard')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = RescheduleAppointmentForm(initial={
-            'new_date': appointment.date,
-            'new_time': appointment.time
-        })
+        form = RescheduleAppointmentForm(initial={'new_date': appointment.date, 'new_time': appointment.time})
 
-    context = {
-        'appointment': appointment,
-        'form': form,
-    }
-
+    context = {'appointment': appointment, 'form': form}
     return render(request, 'doctor_login/reschedule_appointment.html', context)
 
 
